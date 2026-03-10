@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Levski Lifesteal SMP — СУ „Васил Левски"</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--gl:rgba(255,255,255,.07);--gb:rgba(255,255,255,.15);--gs:rgba(255,255,255,.12);--ac:#34d399;--ac2:#60a5fa;--ac3:#f472b6;--bg:#080810;--tx:#f0f0f5;--mu:rgba(255,255,255,.48);--bl:28px}
+*{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--tx);font-family:'Nunito',sans-serif;overflow-x:hidden;cursor:none}
+#cur{position:fixed;width:11px;height:11px;background:var(--ac);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);mix-blend-mode:screen;transition:width .25s,height .25s,background .25s}
+#cur-r{position:fixed;width:34px;height:34px;border:1.5px solid rgba(52,211,153,.45);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:width .3s,height .3s,border-color .3s}
+.bgc{position:fixed;inset:0;z-index:0;background:radial-gradient(ellipse 80% 60% at 15% 15%,rgba(52,211,153,.09),transparent 60%),radial-gradient(ellipse 60% 80% at 85% 85%,rgba(96,165,250,.08),transparent 60%),#080810}
+.gridx{position:fixed;inset:0;z-index:0;background-image:linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);background-size:52px 52px;pointer-events:none}
+.orb{position:fixed;border-radius:50%;filter:blur(90px);pointer-events:none;animation:fo 9s ease-in-out infinite}
+.o1{width:420px;height:420px;background:rgba(52,211,153,.1);top:-120px;left:-120px}
+.o2{width:320px;height:320px;background:rgba(96,165,250,.09);bottom:5%;right:-90px;animation-delay:-3.5s}
+.o3{width:180px;height:180px;background:rgba(244,114,182,.07);top:55%;left:48%;animation-delay:-6s}
+@keyframes fo{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(28px,-18px) scale(1.06)}66%{transform:translate(-18px,26px) scale(.94)}}
+#pcv{position:fixed;inset:0;z-index:0;pointer-events:none}
+.fblk{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.fb{position:absolute;image-rendering:pixelated;opacity:.055;animation:fbf linear infinite}
+@keyframes fbf{0%{transform:translateY(110vh) rotate(0deg);opacity:0}10%{opacity:.055}90%{opacity:.055}100%{transform:translateY(-10vh) rotate(360deg);opacity:0}}
+section{position:relative;z-index:1}
+
+nav{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:200;width:min(96%,920px);background:rgba(8,8,16,.6);backdrop-filter:blur(var(--bl)) saturate(200%);-webkit-backdrop-filter:blur(var(--bl)) saturate(200%);border:1px solid var(--gb);border-radius:22px;padding:11px 20px;display:flex;align-items:center;gap:10px;animation:nIn .9s cubic-bezier(.34,1.56,.64,1) both}
+@keyframes nIn{from{opacity:0;transform:translateX(-50%) translateY(-28px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+.nl{flex-shrink:0;display:flex;flex-direction:column;line-height:1.15;margin-right:6px}
+.nl .a{font-size:.72rem;font-weight:800;letter-spacing:.02em;background:linear-gradient(135deg,var(--ac),var(--ac2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.nl .b{font-size:.6rem;font-weight:600;color:var(--mu)}
+.nc{display:flex;gap:4px;flex:1;justify-content:center}
+.nc a{color:var(--mu);text-decoration:none;font-size:.82rem;font-weight:700;padding:6px 13px;border-radius:11px;transition:all .22s;white-space:nowrap}
+.nc a:hover{color:var(--tx);background:var(--gl)}
+.nr{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.njoin{background:linear-gradient(135deg,var(--ac),#059669)!important;color:#000!important;font-weight:800!important;font-size:.82rem!important;padding:7px 16px!important;border-radius:12px!important;box-shadow:0 4px 18px rgba(52,211,153,.28);transition:all .25s!important}
+.njoin:hover{transform:scale(1.07)!important;box-shadow:0 8px 28px rgba(52,211,153,.45)!important}
+.ltog{display:flex;align-items:center;background:rgba(255,255,255,.07);border:1px solid var(--gb);border-radius:11px;padding:3px;gap:2px}
+.lbtn{font-size:.72rem;font-weight:800;padding:5px 10px;border-radius:8px;border:none;background:transparent;color:var(--mu);cursor:none;transition:all .22s;letter-spacing:.04em;font-family:'Nunito',sans-serif}
+.lbtn.on{background:linear-gradient(135deg,var(--ac2),#3b82f6);color:#fff;box-shadow:0 2px 10px rgba(96,165,250,.35)}
+
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:130px 24px 80px;position:relative;overflow:hidden}
+.hbadge{display:inline-flex;align-items:center;gap:8px;background:var(--gl);border:1px solid var(--gb);backdrop-filter:blur(14px);border-radius:99px;padding:8px 18px;font-size:.76rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ac);margin-bottom:22px;opacity:0;animation:fU .8s .3s ease both}
+.hbadge .dot{width:7px;height:7px;background:var(--ac);border-radius:50%;animation:blk 2s infinite}
+@keyframes blk{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.5)}}
+.hero h1{font-size:clamp(2.8rem,9vw,8rem);font-weight:900;line-height:.88;letter-spacing:-.04em;margin-bottom:14px;opacity:0;animation:fU .9s .5s ease both}
+.hero h1 .l1{display:block;background:linear-gradient(135deg,#fff,rgba(255,255,255,.65));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero h1 .l2{display:block;background:linear-gradient(135deg,var(--ac),var(--ac2) 55%,var(--ac3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-top:4px}
+.hsch{font-size:clamp(.78rem,1.5vw,.93rem);color:var(--ac2);font-weight:700;letter-spacing:.04em;margin-bottom:18px;opacity:0;animation:fU .8s .65s ease both;background:rgba(96,165,250,.1);border:1px solid rgba(96,165,250,.2);border-radius:10px;padding:6px 18px;display:inline-block}
+.hsub{font-size:clamp(.92rem,2vw,1.15rem);color:var(--mu);max-width:500px;line-height:1.65;font-weight:400;margin-bottom:38px;opacity:0;animation:fU .9s .8s ease both}
+.hcta{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;opacity:0;animation:fU .9s 1s ease both}
+.btp{background:linear-gradient(135deg,var(--ac),#059669);color:#000;font-weight:800;font-size:.93rem;padding:13px 30px;border-radius:15px;border:none;cursor:none;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:all .3s cubic-bezier(.34,1.56,.64,1);box-shadow:0 8px 28px rgba(52,211,153,.28)}
+.btp:hover{transform:scale(1.06) translateY(-2px);box-shadow:0 16px 44px rgba(52,211,153,.42)}
+.bts{background:var(--gl);backdrop-filter:blur(14px);border:1px solid var(--gb);color:var(--tx);font-weight:700;font-size:.93rem;padding:13px 30px;border-radius:15px;cursor:none;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:all .3s}
+.bts:hover{background:var(--gs);transform:scale(1.03)}
+.scrlh{position:absolute;bottom:32px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:7px;color:var(--mu);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;animation:fU 1s 1.4s ease both,bob 2s 2.4s ease-in-out infinite}
+.sbarx{width:1.5px;height:44px;background:linear-gradient(to bottom,transparent,var(--ac),transparent);animation:sbx 2s 2.4s ease-in-out infinite}
+@keyframes sbx{0%,100%{opacity:.4}50%{opacity:1}}
+@keyframes bob{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(7px)}}
+@keyframes fU{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+
+.sbar2{position:relative;z-index:1;display:flex;justify-content:center;gap:8px;padding:0 24px 80px;flex-wrap:wrap}
+.sc{flex:1;min-width:118px;max-width:200px;background:var(--gl);backdrop-filter:blur(var(--bl));border:1px solid var(--gb);border-radius:20px;padding:22px 16px;text-align:center;transition:all .35s cubic-bezier(.34,1.56,.64,1);opacity:0;transform:translateY(28px)}
+.sc.vis{opacity:1;transform:translateY(0)}
+.sc:hover{transform:translateY(-6px) scale(1.03);background:var(--gs)}
+.sn{font-size:2.2rem;font-weight:900;letter-spacing:-.04em;background:linear-gradient(135deg,var(--ac),var(--ac2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;margin-bottom:5px}
+.sl{font-size:.75rem;color:var(--mu);font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+
+.owners{padding:70px 24px 90px;position:relative;z-index:1}
+.sh{text-align:center;margin-bottom:54px;opacity:0;transform:translateY(34px);transition:all .75s ease}
+.sh.vis{opacity:1;transform:translateY(0)}
+.stag{display:inline-block;font-size:.7rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ac2);background:rgba(96,165,250,.1);border:1px solid rgba(96,165,250,.22);border-radius:8px;padding:5px 12px;margin-bottom:14px}
+.sti{font-size:clamp(1.9rem,5vw,3.8rem);font-weight:900;letter-spacing:-.03em;line-height:1;background:linear-gradient(135deg,#fff,rgba(255,255,255,.55));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.og{display:flex;justify-content:center;gap:24px;flex-wrap:wrap;max-width:860px;margin:0 auto}
+.oc{flex:1;min-width:270px;max-width:370px;background:var(--gl);backdrop-filter:blur(var(--bl));border:1px solid var(--gb);border-radius:28px;padding:38px 28px;text-align:center;position:relative;overflow:hidden;transition:all .4s cubic-bezier(.34,1.56,.64,1);opacity:0;transform:translateY(44px) scale(.95)}
+.oc.vis{opacity:1;transform:translateY(0) scale(1)}
+.oc:hover{transform:translateY(-10px) scale(1.025)}
+.oc:hover .cg{opacity:1}
+.cg{position:absolute;inset:0;background:radial-gradient(ellipse 80% 55% at 50% 0%,rgba(52,211,153,.12),transparent 68%);opacity:0;transition:opacity .4s;pointer-events:none}
+.cb .cg{background:radial-gradient(ellipse 80% 55% at 50% 0%,rgba(96,165,250,.14),transparent 68%)}
+.cb:hover{border-color:rgba(96,165,250,.38)!important;box-shadow:0 22px 60px rgba(96,165,250,.14)!important}
+.oc:not(.cb):hover{border-color:rgba(52,211,153,.38);box-shadow:0 22px 60px rgba(52,211,153,.14)}
+.sw{width:100px;height:160px;margin:0 auto 24px;position:relative;filter:drop-shadow(0 14px 28px rgba(0,0,0,.45));transition:transform .5s cubic-bezier(.34,1.56,.64,1)}
+.oc:hover .sw{transform:translateY(-6px) scale(1.07) rotate(-2deg)}
+.skimg{image-rendering:pixelated;display:block;width:100px;height:160px;object-fit:contain;object-position:center bottom}
+.orole{font-size:.7rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:5px 13px;border-radius:99px;display:inline-block;margin-bottom:10px}
+.ro{background:rgba(52,211,153,.14);color:var(--ac);border:1px solid rgba(52,211,153,.3)}
+.rc{background:rgba(96,165,250,.14);color:var(--ac2);border:1px solid rgba(96,165,250,.3)}
+.oname{font-size:1.75rem;font-weight:900;letter-spacing:-.03em;margin-bottom:5px;color:#fff}
+.oign{font-family:'Space Grotesk',monospace;font-size:.88rem;color:var(--mu);font-weight:600;background:rgba(255,255,255,.06);border-radius:8px;padding:4px 12px;display:inline-block;margin-bottom:18px}
+.odesc{font-size:.86rem;color:var(--mu);line-height:1.65;font-weight:400}
+
+.about{padding:50px 24px 90px;position:relative;z-index:1;max-width:1060px;margin:0 auto}
+.ag{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:50px}
+.af{background:var(--gl);backdrop-filter:blur(var(--bl));border:1px solid var(--gb);border-radius:22px;padding:28px 24px;transition:all .32s;opacity:0;transform:translateY(28px)}
+.af.vis{opacity:1;transform:translateY(0)}
+.af:hover{transform:translateY(-4px);background:var(--gs)}
+.af.big{grid-column:1/-1;display:flex;gap:24px;align-items:center}
+.fi{font-size:1.9rem;margin-bottom:12px;display:block;filter:drop-shadow(0 0 10px rgba(52,211,153,.45))}
+.af.big .fi{font-size:2.8rem;flex-shrink:0;margin-bottom:0}
+.ft{font-size:1.05rem;font-weight:800;margin-bottom:7px;color:#fff}
+.fd{font-size:.85rem;color:var(--mu);line-height:1.65}
+
+.rules{padding:50px 24px 90px;position:relative;z-index:1;max-width:860px;margin:0 auto}
+.ri{display:flex;align-items:flex-start;gap:16px;padding:18px 22px;background:var(--gl);backdrop-filter:blur(14px);border:1px solid var(--gb);border-radius:16px;margin-bottom:9px;transition:all .28s;opacity:0;transform:translateX(-28px)}
+.ri.vis{opacity:1;transform:translateX(0)}
+.ri:hover{background:var(--gs);transform:translateX(6px)}
+.rnum{font-size:1.3rem;font-weight:900;background:linear-gradient(135deg,var(--ac),var(--ac2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;flex-shrink:0;width:30px;text-align:center;letter-spacing:-.05em}
+.rtxt{font-size:.9rem;line-height:1.6;color:rgba(255,255,255,.8);font-weight:500;padding-top:1px}
+.rtxt strong{color:#fff;font-weight:800}
+
+.join{padding:50px 24px 130px;position:relative;z-index:1;text-align:center}
+.jcard{max-width:660px;margin:50px auto 0;background:var(--gl);backdrop-filter:blur(var(--bl));border:1px solid var(--gb);border-radius:30px;padding:50px 36px;position:relative;overflow:hidden;opacity:0;transform:scale(.96) translateY(28px);transition:all .75s cubic-bezier(.34,1.56,.64,1)}
+.jcard.vis{opacity:1;transform:scale(1) translateY(0)}
+.jglow{position:absolute;width:280px;height:280px;background:radial-gradient(circle,rgba(52,211,153,.13),transparent 68%);top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none}
+.jip{font-family:'Space Grotesk',monospace;font-size:1.3rem;font-weight:700;background:linear-gradient(135deg,var(--ac),var(--ac2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;background-color:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.22);border-radius:13px;padding:13px 26px;display:inline-block;margin:22px 0;letter-spacing:.04em;cursor:none;transition:all .3s;position:relative;z-index:1}
+.jip:hover{transform:scale(1.04);background-color:rgba(52,211,153,.13)}
+.jver{font-size:.78rem;color:var(--mu);font-weight:600;position:relative;z-index:1}
+
+.dc-btn{display:inline-flex;align-items:center;gap:8px;margin-top:18px;background:rgba(88,101,242,0.15);border:1px solid rgba(88,101,242,0.35);color:#7289da;font-size:.83rem;font-weight:800;padding:9px 20px;border-radius:12px;text-decoration:none;transition:all .28s;cursor:none}
+.dc-btn:hover{background:rgba(88,101,242,0.28);transform:translateY(-2px);box-shadow:0 6px 20px rgba(88,101,242,0.25);color:#fff}
+.dc-btn-blue{background:rgba(88,101,242,0.15);border-color:rgba(88,101,242,0.35)}
+
+
+.live-wrap{position:relative;z-index:1;max-width:860px;margin:0 auto 60px;padding:0 24px}
+.live-card{background:var(--gl);backdrop-filter:blur(var(--bl));border:1px solid var(--gb);border-radius:24px;padding:28px 32px}
+.live-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px}
+.live-title{font-size:1.1rem;font-weight:900;color:#fff;margin-bottom:3px}
+.live-sub{font-size:.75rem;color:var(--mu);font-weight:600}
+.live-ip{font-family:'Space Grotesk',monospace;font-size:.78rem;font-weight:700;color:var(--ac);background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.2);border-radius:10px;padding:6px 14px}
+.player-list{display:flex;flex-wrap:wrap;gap:10px;min-height:48px;align-items:center}
+.pl-item{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.06);border:1px solid var(--gb);border-radius:12px;padding:7px 14px;font-size:.85rem;font-weight:700;color:var(--tx);transition:all .25s}
+.pl-item:hover{background:rgba(255,255,255,.11);transform:translateY(-2px)}
+.pl-item img{width:24px;height:24px;image-rendering:pixelated;border-radius:4px}
+.pl-empty,.pl-offline{color:var(--mu);font-size:.88rem;font-weight:600}
+.pl-offline{color:#ef4444}
+.spin2{display:inline-block;animation:sp 1s linear infinite;margin-right:4px}
+@keyframes sp{to{transform:rotate(360deg)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spin{display:inline-block;animation:spin 1s linear infinite;font-size:1.4rem;color:var(--ac)}
+
+
+footer em{background:linear-gradient(135deg,var(--ac),var(--ac2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:800;font-style:normal}
+
+/* TOAST */
+.toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(15,15,25,0.92);backdrop-filter:blur(20px);border:1px solid rgba(52,211,153,0.4);border-radius:16px;padding:14px 24px;display:flex;align-items:center;gap:10px;font-size:.92rem;font-weight:700;color:#fff;z-index:9999;opacity:0;pointer-events:none;transition:all .4s cubic-bezier(.34,1.56,.64,1);white-space:nowrap;box-shadow:0 8px 32px rgba(52,211,153,0.2)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast-icon{font-size:1.1rem}
+
+@media(max-width:640px){.ag{grid-template-columns:1fr}.af.big{flex-direction:column}nav{padding:10px 14px;gap:7px}.nc a{padding:5px 9px;font-size:.75rem}}
+</style>
+</head>
+<body>
+<div id="cur"></div><div id="cur-r"></div>
+<div class="bgc"></div><div class="gridx"></div>
+<div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div>
+<canvas id="pcv"></canvas>
+<div class="fblk" id="fblk"></div>
+
+<nav>
+  <div class="nl">
+    <span class="a">⚔️ Levski Lifesteal SMP</span>
+    <span class="b" id="nsch">СУ „Васил Левски" — Дулово</span>
+  </div>
+  <div class="nc">
+    <a href="#owners" data-bg="Основатели" data-en="Founders">Основатели</a>
+    <a href="#about"  data-bg="За нас"     data-en="About">За нас</a>
+    <a href="#rules"  data-bg="Правила"    data-en="Rules">Правила</a>
+    <a href="#join" class="njoin" data-bg="Присъедини се" data-en="Join Now">Присъедини се</a>
+  </div>
+  <div class="nr">
+    <div class="ltog">
+      <button class="lbtn on" id="bbg" onclick="setL('bg')">BG</button>
+      <button class="lbtn"    id="ben" onclick="setL('en')">EN</button>
+    </div>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hbadge"><div class="dot"></div><span data-bg="Сървърът е онлайн" data-en="Server Online">Сървърът е онлайн</span></div>
+  <h1><span class="l1">Levski</span><span class="l2">Lifesteal SMP</span></h1>
+  <div class="hsch" id="hsch">⚔️ Levski Lifesteal SMP</div>
+  <p class="hsub" data-bg="Официалният Lifesteal SMP на СУ „Васил Левски". Открадвай сърца, строй империи и оцелей до края." data-en="The official Lifesteal SMP of Vasil Levski school. Steal hearts, build empires and survive to the end.">Официалният Lifesteal SMP на СУ „Васил Левски". Открадвай сърца, строй империи и оцелей до края.</p>
+  <div class="hcta">
+    <a href="#join"  class="btp" data-bg="⛏ Присъедини се" data-en="⛏ Join the Server">⛏ Присъедини се</a>
+    <a href="#about" class="bts" data-bg="Научи повече ↓"  data-en="Learn More ↓">Научи повече ↓</a>
+  </div>
+  <div class="scrlh"><div class="sbarx"></div><span data-bg="Скрол" data-en="Scroll">Скрол</span></div>
+</section>
+
+<div class="sbar2">
+  <div class="sc" data-delay="0">  <div class="sn" id="stat-online">∞</div>  <div class="sl" data-bg="Размер на света" data-en="World Size">Размер на света</div></div>
+  <div class="sc" data-delay="100"><div class="sn" id="stat-players"><span class="spin">⟳</span></div><div class="sl" data-bg="Играчи онлайн" data-en="Players Online">Играчи онлайн</div></div>
+  <div class="sc" data-delay="200"><div class="sn">2</div>  <div class="sl" data-bg="Основатели"      data-en="Founders">Основатели</div></div>
+  <div class="sc" data-delay="300"><div class="sn">1.21</div><div class="sl" data-bg="Версия"         data-en="Version">Версия</div></div>
+</div>
+
+<!-- LIVE PLAYERS -->
+<div class="live-wrap">
+  <div class="live-card">
+    <div class="live-header">
+      <div>
+        <div class="live-title" data-bg="Играчи онлайн" data-en="Players Online">Играчи онлайн</div>
+        <div class="live-sub" data-bg="Актуализира се на всеки 30 секунди" data-en="Updates every 30 seconds">Актуализира се на всеки 30 секунди</div>
+      </div>
+      <div class="live-ip">schoolsmpdulovo.falix.gg</div>
+    </div>
+    <div id="player-list" class="player-list">
+      <div class="pl-empty"><span class="spin2">⟳</span> <span data-bg="Зарежда се..." data-en="Loading...">Зарежда се...</span></div>
+    </div>
+  </div>
+</div>
+
+<section class="owners" id="owners">
+  <div class="sh">
+    <div class="stag" data-bg="Екипът" data-en="The Team">Екипът</div>
+    <h2 class="sti" data-bg="Запознай се с основателите" data-en="Meet the Founders">Запознай се с основателите</h2>
+  </div>
+  <div class="og">
+    <div class="oc" data-delay="0">
+      <div class="cg"></div>
+      <div class="sw">
+        <img class="skimg" src="https://visage.surgeplay.com/full/256/l00pn0vas" alt="l00pn0vas">
+      </div>
+      <div class="orole ro">👑 <span data-bg="Собственик" data-en="Owner">Собственик</span></div>
+      <div class="oname">Adil</div>
+      <div class="oign">l00pn0vas</div>
+      <div class="odesc" data-bg="Мозъкът зад сървъра. Билдър, скриптър и човекът, който поддържа всичко в ред. Познат онлайн като LoopNovas." data-en="The mastermind behind the server. Builder, scripter, and the person who keeps everything running. Known online as LoopNovas.">Мозъкът зад сървъра. Билдър, скриптър и човекът, който поддържа всичко в ред. Познат онлайн като LoopNovas.</div>
+      <a class="dc-btn" href="https://discord.com/users/1126163475559882834" target="_blank" rel="noopener">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
+        <span data-bg="Свържи се" data-en="Contact">Свържи се</span>
+      </a>
+    </div>
+    <div class="oc cb" data-delay="160">
+      <div class="cg"></div>
+      <div class="sw">
+        <img class="skimg" src="https://visage.surgeplay.com/full/256/GoD5091" alt="GoD5091">
+      </div>
+      <div class="orole rc">🛡 <span data-bg="Съсобственик" data-en="Co-Owner">Съсобственик</span></div>
+      <div class="oname">Enes</div>
+      <div class="oign">GoD5091</div>
+      <div class="odesc" data-bg="Съоснователят и гръбнакът на общността. Enes следи за баланс и ред — истинска легенда на сървъра." data-en="Co-founder and backbone of the community. Enes keeps the server balanced and fair — a true legend.">Съоснователят и гръбнакът на общността. Enes следи за баланс и ред — истинска легенда на сървъра.</div>
+      <a class="dc-btn dc-btn-blue" href="https://discord.com/users/1402376764449358031" target="_blank" rel="noopener">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
+        <span data-bg="Свържи се" data-en="Contact">Свържи се</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section class="about" id="about">
+  <div class="sh">
+    <div class="stag" data-bg="Функции" data-en="Features">Функции</div>
+    <h2 class="sti" data-bg="Какво ни прави различни" data-en="What Makes Us Different">Какво ни прави различни</h2>
+  </div>
+  <div class="ag">
+    <div class="af big">
+      <span class="fi">🌍</span>
+      <div>
+        <div class="ft" data-bg="Епичен свят за оцеляване" data-en="Epic Survival World">Епичен свят за оцеляване</div>
+        <div class="fd" data-bg="Огромен свят без рестарти. Всяко строение остава завинаги. Всеки блок е твой белег в историята на SMP." data-en="A massive world with no resets. Every build stays forever. Each block is your mark on the SMP's history.">Огромен свят без рестарти. Всяко строение остава завинаги. Всеки блок е твой белег в историята на SMP.</div>
+      </div>
+    </div>
+    <div class="af">
+      <span class="fi">⚔️</span>
+      <div class="ft" data-bg="PvP зони" data-en="PvP Zones">PvP зони</div>
+      <div class="fd" data-bg="Специални арени за PvP битки с класа. Само уменията ти ще те спасят." data-en="Dedicated arenas to test your skills against classmates. Survival instincts only.">Специални арени за PvP битки с класа. Само уменията ти ще те спасят.</div>
+    </div>
+    <div class="af">
+      <span class="fi">🏗️</span>
+      <div class="ft" data-bg="Строителство" data-en="Creative Building">Строителство</div>
+      <div class="fd" data-bg="Заяви земя и строй каквото пожелаеш — от малка колиба до огромна крепост." data-en="Claim land and build whatever you want — from a tiny hut to a massive fortress.">Заяви земя и строй каквото пожелаеш — от малка колиба до огромна крепост.</div>
+    </div>
+    <div class="af">
+      <span class="fi">💎</span>
+      <div class="ft" data-bg="Икономика" data-en="Economy">Икономика</div>
+      <div class="fd" data-bg="Търгувай, продавай и купувай ресурси. Забогатей или просто оцелей." data-en="Trade, sell and buy resources. Get rich or just survive.">Търгувай, продавай и купувай ресурси. Забогатей или просто оцелей.</div>
+    </div>
+    <div class="af">
+      <span class="fi">🎮</span>
+      <div class="ft" data-bg="Събития и мини-игри" data-en="Events and Minigames">Събития и мини-игри</div>
+      <div class="fd" data-bg="Редовни турнири и мини-игри от основателите. Винаги нещо се случва." data-en="Regular tournaments and mini-games from the owners. Always something going on.">Редовни турнири и мини-игри от основателите. Винаги нещо се случва.</div>
+    </div>
+  </div>
+</section>
+
+<section class="rules" id="rules">
+  <div class="sh">
+    <div class="stag" data-bg="Насоки" data-en="Guidelines">Насоки</div>
+    <h2 class="sti" data-bg="Правила на сървъра" data-en="Server Rules">Правила на сървъра</h2>
+  </div>
+  <div class="ri"><div class="rnum">01</div><div class="rtxt"><strong data-bg="Без грифинг" data-en="No Griefing">Без грифинг</strong> — <span data-bg="Забранено е да рушиш или крадеш от постройките на другите." data-en="Destroying or stealing from other players' builds is forbidden.">Забранено е да рушиш или крадеш от постройките на другите.</span></div></div>
+  <div class="ri"><div class="rnum">02</div><div class="rtxt"><strong data-bg="Без чийт / хак" data-en="No Cheating / Hacking">Без чийт / хак</strong> — <span data-bg="Използването на чийт клиенти или експлойти води до перманентен бан." data-en="Using cheat clients or exploits results in a permanent ban.">Използването на чийт клиенти или експлойти води до перманентен бан.</span></div></div>
+  <div class="ri"><div class="rnum">03</div><div class="rtxt"><strong data-bg="Уважавай другите" data-en="Respect Everyone">Уважавай другите</strong> — <span data-bg="Токсично поведение, тормоз и обиди не се толерират." data-en="Toxic behavior, bullying and harassment are not tolerated.">Токсично поведение, тормоз и обиди не се толерират.</span></div></div>
+  <div class="ri"><div class="rnum">04</div><div class="rtxt"><strong data-bg="Без спам" data-en="No Spam">Без спам</strong> — <span data-bg="Не претрупвай чата. Говори ясно и дай шанс на другите." data-en="Don't flood the chat. Speak clearly and give others a chance.">Не претрупвай чата. Говори ясно и дай шанс на другите.</span></div></div>
+  <div class="ri"><div class="rnum">05</div><div class="rtxt"><strong data-bg="Решението на основателя е окончателно" data-en="Owner Decision is Final">Решението на основателя е окончателно</strong> — <strong>l00pn0vas</strong> <span data-bg="и" data-en="and">и</span> <strong>GoD5091</strong> <span data-bg="имат последната дума." data-en="have the final say.">имат последната дума.</span></div></div>
+  <div class="ri"><div class="rnum">06</div><div class="rtxt"><strong data-bg="Забавлявай се" data-en="Have Fun">Забавлявай се</strong> — <span data-bg="Само добри вайби! ✌️" data-en="Good vibes only! ✌️">Само добри вайби! ✌️</span></div></div>
+</section>
+
+<section class="join" id="join">
+  <div class="sh">
+    <div class="stag" data-bg="Влез" data-en="Get In">Влез</div>
+    <h2 class="sti" data-bg="Готов ли си да играеш?" data-en="Ready to Play?">Готов ли си да играеш?</h2>
+  </div>
+  <div class="jcard">
+    <div class="jglow"></div>
+    <p style="color:var(--mu);font-size:.9rem;font-weight:500;position:relative;z-index:1" data-bg="Кликни върху IP адреса, за да го копираш!" data-en="Click the IP address to copy it!">Кликни върху IP адреса, за да го копираш!</p>
+    <div class="jip" id="copy-ip" onclick="copyIP()" title="Click to copy!">☁ schoolsmpdulovo.falix.gg</div>
+    <p class="jver">Java Edition • Version 1.21.1 • Lifesteal Survival</p><br>
+    <button onclick="copyIP()" class="btp" style="position:relative;z-index:1;margin-top:14px;border:none;font-family:'Nunito',sans-serif;font-size:.95rem;" data-bg="📋 Копирай IP адреса" data-en="📋 Copy Server IP">📋 Копирай IP адреса</button>
+  </div>
+</section>
+
+<!-- TOAST -->
+<div id="toast" class="toast">
+  <span class="toast-icon">✅</span>
+  <span id="toast-msg">IP копиран!</span>
+</div>
+
+<footer>
+  <em data-bg="Направено с ❤️ от" data-en="Made with ❤️ by">Направено с ❤️ от</em> <em>l00pn0vas</em> & <em>GoD5091</em> — Levski Lifesteal SMP © 2025 — СУ „Васил Левски", Дулово
+</footer>
+
+<script>
+// LANGUAGE
+let CL='bg';
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  const toastMsg = document.getElementById('toast-msg');
+  toastMsg.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(() => toast.classList.remove('show'), 2500);
+}
+
+function copyIP() {
+  const ip = 'schoolsmpdulovo.falix.gg';
+  navigator.clipboard.writeText(ip).then(() => {
+    const lang = document.documentElement.lang || 'bg';
+    showToast(lang === 'bg' ? '✅ IP адресът е копиран!' : '✅ IP copied to clipboard!');
+    // pulse the IP element
+    const el = document.getElementById('copy-ip');
+    if (el) { el.style.transform = 'scale(1.06)'; setTimeout(() => el.style.transform = '', 300); }
+  }).catch(() => {
+    showToast('❌ Копирането не успя');
+  });
+}
+function setL(l){
+  CL=l;
+  document.getElementById('bbg').classList.toggle('on',l==='bg');
+  document.getElementById('ben').classList.toggle('on',l==='en');
+  document.querySelectorAll('[data-bg][data-en]').forEach(el=>{
+    if(el.childElementCount===0) el.textContent=el.dataset[l];
+  });
+  // nested rule items
+  document.querySelectorAll('.rtxt strong[data-bg], .rtxt span[data-bg]').forEach(e=>{ e.textContent=e.dataset[l]; });
+  // owner role spans
+  document.querySelectorAll('.orole span[data-bg]').forEach(e=>{ e.textContent=e.dataset[l]; });
+  // school tags
+  document.getElementById('hsch').textContent=l==='bg'?'⚔️ Levski Lifesteal SMP':'🏫 "Vasil Levski" SOU — Dulovo';
+  document.getElementById('nsch').textContent=l==='bg'?'СУ „Васил Левски" — Дулово':'⚔️ Levski Lifesteal SMP';
+  document.documentElement.lang=l;
+}
+
+// CURSOR
+const cur=document.getElementById('cur'),ring=document.getElementById('cur-r');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px'});
+(function loop(){rx+=(mx-rx)*.15;ry+=(my-ry)*.15;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(loop)})();
+document.querySelectorAll('a,button,.oc,.jip').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cur.style.width='18px';cur.style.height='18px';cur.style.background='#60a5fa';ring.style.width='46px';ring.style.height='46px';ring.style.borderColor='rgba(96,165,250,.6)'});
+  el.addEventListener('mouseleave',()=>{cur.style.width='11px';cur.style.height='11px';cur.style.background='var(--ac)';ring.style.width='34px';ring.style.height='34px';ring.style.borderColor='rgba(52,211,153,.45)'});
+});
+
+// PARTICLES
+const pc=document.getElementById('pcv');const ctx2=pc.getContext('2d');
+pc.width=innerWidth;pc.height=innerHeight;
+const pts=Array.from({length:55},()=>({x:Math.random()*pc.width,y:Math.random()*pc.height,r:Math.random()*1.4+.3,vx:(Math.random()-.5)*.28,vy:(Math.random()-.5)*.28,o:Math.random()*.38+.05,c:['#34d399','#60a5fa','#f472b6'][0|Math.random()*3]}));
+(function dp(){ctx2.clearRect(0,0,pc.width,pc.height);pts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0)p.x=pc.width;if(p.x>pc.width)p.x=0;if(p.y<0)p.y=pc.height;if(p.y>pc.height)p.y=0;ctx2.beginPath();ctx2.arc(p.x,p.y,p.r,0,Math.PI*2);ctx2.fillStyle=p.c;ctx2.globalAlpha=p.o;ctx2.fill()});ctx2.globalAlpha=1;requestAnimationFrame(dp)})();
+window.addEventListener('resize',()=>{pc.width=innerWidth;pc.height=innerHeight});
+
+// FLOATING BLOCKS
+const bc=['#5d9e34','#7c5c3a','#888','#6b8e6b','#c97c3a'],fbc=document.getElementById('fblk');
+for(let i=0;i<12;i++){const b=document.createElement('div');b.className='fb';const s=18+Math.random()*22,c=bc[0|Math.random()*bc.length];b.style.cssText='left:'+Math.random()*100+'%;width:'+s+'px;height:'+s+'px;background:'+c+';border-top:'+s*.15+'px solid rgba(255,255,255,.3);border-left:'+s*.1+'px solid rgba(255,255,255,.2);border-bottom:'+s*.15+'px solid rgba(0,0,0,.3);border-right:'+s*.1+'px solid rgba(0,0,0,.2);animation-duration:'+(10+Math.random()*20)+'s;animation-delay:'+(-Math.random()*20)+'s';fbc.appendChild(b)}
+
+// SCROLL REVEAL
+const obs=new IntersectionObserver(en=>en.forEach(e=>{if(e.isIntersecting){const el=e.target,d=parseInt(el.dataset.delay||0);setTimeout(()=>el.classList.add('vis'),d)}}),{threshold:.1});
+document.querySelectorAll('.sc,.sh,.oc,.af,.ri,.jcard').forEach(el=>obs.observe(el));
+
+// PARALLAX
+window.addEventListener('scroll',()=>{const y=scrollY;document.querySelector('.o1').style.transform='translate(0,'+y*.1+'px)';document.querySelector('.o2').style.transform='translate(0,'+-y*.08+'px)'});
+
+// CLICK RIPPLE
+document.addEventListener('click',e=>{const r=document.createElement('div');r.style.cssText='position:fixed;left:'+e.clientX+'px;top:'+e.clientY+'px;width:1px;height:1px;background:radial-gradient(circle,rgba(52,211,153,.4),transparent 70%);border-radius:50%;pointer-events:none;z-index:9990;transform:translate(-50%,-50%);animation:rpl .6s ease-out forwards';document.body.appendChild(r);setTimeout(()=>r.remove(),600)});
+const rs=document.createElement('style');rs.textContent='@keyframes rpl{to{width:110px;height:110px;opacity:0}}';document.head.appendChild(rs);
+
+// Skins loaded via <img> tags directly in HTML
+
+// ══════════════════════════════════
+// LIVE SERVER STATUS (mcstatus.io)
+// ══════════════════════════════════
+const SERVER_IP = 'schoolsmpdulovo.falix.gg';
+
+async function fetchServerStatus() {
+  try {
+    const res = await fetch(`https://api.mcstatus.io/v2/status/java/${SERVER_IP}?timeout=5`, {cache: 'no-store'});
+    if (!res.ok) throw new Error('bad response');
+    const data = await res.json();
+
+    const online = data.online === true;
+    const players = online && data.players ? data.players.online : 0;
+    const maxPlayers = online && data.players ? data.players.max : 0;
+    const playerList = online && data.players && data.players.list ? data.players.list : [];
+
+    // Update player count stat card
+    const el = document.getElementById('stat-players');
+    if (el) {
+      if (online) {
+        el.innerHTML = `<span style="color:var(--ac)">${players}</span><span style="font-size:.9rem;color:var(--mu);font-weight:600">/${maxPlayers}</span>`;
+      } else {
+        el.innerHTML = `<span style="font-size:1rem;color:#ef4444;font-weight:800">OFFLINE</span>`;
+      }
+    }
+
+    // Update hero badge dot + text
+    const dot = document.querySelector('.hbadge .dot');
+    const badgeText = document.querySelector('.hbadge span');
+    if (dot) {
+      dot.style.background = online ? 'var(--ac)' : '#ef4444';
+      dot.style.boxShadow = online ? '0 0 8px var(--ac)' : '0 0 8px #ef4444';
+    }
+    if (badgeText) {
+      const lang = document.documentElement.lang || 'bg';
+      if (online) {
+        badgeText.dataset.bg = `Сървърът е онлайн • ${players}/${maxPlayers} играча`;
+        badgeText.dataset.en = `Server Online • ${players}/${maxPlayers} players`;
+      } else {
+        badgeText.dataset.bg = 'Сървърът е офлайн';
+        badgeText.dataset.en = 'Server Offline';
+      }
+      badgeText.textContent = badgeText.dataset[lang];
+    }
+
+    // Render player list
+    const listEl = document.getElementById('player-list');
+    if (listEl) {
+      if (!online) {
+        listEl.innerHTML = `<div class="pl-offline" data-bg="Сървърът е офлайн в момента 🔴" data-en="Server is currently offline 🔴">Сървърът е офлайн в момента 🔴</div>`;
+      } else if (players === 0) {
+        listEl.innerHTML = `<div class="pl-empty" data-bg="Няма играчи онлайн в момента" data-en="No players online right now">Няма играчи онлайн в момента</div>`;
+      } else {
+        listEl.innerHTML = playerList.map(p => {
+          const name = p.name_clean || p.name || 'Unknown';
+          return `<div class="pl-item">
+            <img src="https://visage.surgeplay.com/face/32/${name}" alt="${name}" onerror="this.src='https://mc-heads.net/avatar/${name}/32'">
+            <span>${name}</span>
+          </div>`;
+        }).join('');
+      }
+    }
+
+  } catch(e) {
+    const el = document.getElementById('stat-players');
+    if (el) el.innerHTML = `<span style="font-size:.85rem;color:#f59e0b;font-weight:700">ERR</span>`;
+    const listEl = document.getElementById('player-list');
+    if (listEl) listEl.innerHTML = `<div class="pl-offline" data-bg="Неуспешно свързване със сървъра" data-en="Could not reach the server">Неуспешно свързване със сървъра</div>`;
+  }
+}
+
+fetchServerStatus();
+setInterval(fetchServerStatus, 30000);
+</script>
+</body>
+</html>
